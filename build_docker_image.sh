@@ -75,7 +75,7 @@ echo "[$NOW] trigger build to Hub Docker"
 curl -H "Content-Type: application/json" --data '{"build": true}' -X POST "https://registry.hub.docker.com/u/$IMAGE/trigger/$DOCKER_KEY/"
 echo ""
 sleep 5
-STATUS=0
+STATUS=$(curl -s  https://hub.docker.com/v2/repositories/$IMAGE/buildhistory/?page_size=1 | jq .results[0].status)
 
 # wait until build is ready
 while [ $STATUS > 0 ]
