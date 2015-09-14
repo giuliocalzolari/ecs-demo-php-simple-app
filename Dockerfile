@@ -7,7 +7,7 @@ RUN apt-get install -y git curl apache2 php5 libapache2-mod-php5 php5-mcrypt php
 
 RUN easy_install pip \
     && pip install awscli \
-    && curl -o /usr/local/bin/ecs-deploy https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy \
+    && curl -o /usr/local/bin/ecs-deploy https://raw.githubusercontent.com/giuliocalzolari/ecs-demo-php-simple-app/master/ecs-deploy \
     && chmod a+x /usr/local/bin/ecs-deploy
 
 ENTRYPOINT ["/usr/local/bin/ecs-deploy"]
