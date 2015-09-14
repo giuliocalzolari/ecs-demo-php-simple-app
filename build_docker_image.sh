@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 
 function usage() {
@@ -74,7 +74,7 @@ echo ""
 STATUS=0
 
 # wait until build is ready
-while [ $STATUS > 0 ]; do
+while [ $STATUS -gt 0 ]; do
   sleep 5
   NOW=$(date +"%Y-%m-%d %T")
   STATUS=$(curl -s  https://hub.docker.com/v2/repositories/$IMAGE/buildhistory/?page_size=1 | jq .results[0].status)
@@ -82,9 +82,9 @@ while [ $STATUS > 0 ]; do
 done
 
   if [ $STATUS == 10 ]; then
-    echo "Build OK"
+    echo "[$NOW] Build OK"
     exit 0
   else
-    echo "Build Error Code: $STATUS"
+    echo "[$NOW] Build Error Code: $STATUS"
     exit 1
   fi
