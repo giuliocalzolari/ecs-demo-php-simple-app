@@ -9,9 +9,12 @@ function usage() {
 
     Required arguments:
         -k | --docker-key              Name of service to deploy
-        -i | --image            Name of Docker image to run, ex: mariadb:latest
+        -i | --image                   Name of Docker image to run, ex: giuliocalzo/ecs-demo-php-simple-app
 
-        giuliocalzo/ecs-demo-php-simple-app
+        Optional arguments:
+            -t | --timeout          Default is 300s. Wait docker image .
+
+
 
 EOM
 
@@ -21,6 +24,7 @@ EOM
 
 VERBOSE=false
 IMAGE=false
+TIMEOUT=300
 
 NOW=$(date +"%Y-%m-%d %T")
 
@@ -45,6 +49,10 @@ do
         -v|--verbose)
             VERBOSE=true
             ;;
+        -t|--timeout)
+            TIMEOUT="$2"
+            shift
+            ;;
         *)
             usage
             exit 2
@@ -53,9 +61,9 @@ do
     shift # past argument or value
 done
 
-if [ $VERBOSE == true ]; then
-    set -x
-fi
+# if [ $VERBOSE == true ]; then
+#     set -x
+# fi
 
 
 if [ $DOCKER_KEY == false ]; then
@@ -68,31 +76,66 @@ if [ $IMAGE == false ]; then
     exit 1
 fi
 
+RAW=$(curl -s  https://hub.docker.com/v2/repositories/$IMAGE/buildhistory/?page_size=1)
+old_build_code=$( echo $RAW | jq .results[0].build_code)
+trigger=true
+
+if [ "$( echo $RAW | jq .results[0].status)" == 0 ]; then
+  echo "[$NOW] IMAGE $old_build_code creation in progress"
+  trigger=false
+
+  if [ $VERBOSE == false ]; then
+     exit 1
+  fi
+
+fi
 
 
-# trigger build
-echo "[$NOW] trigger build to Hub Docker"
-curl -H "Content-Type: application/json" --data '{"build": true}' -X POST "https://registry.hub.docker.com/u/$IMAGE/trigger/$DOCKER_KEY/"
-echo ""
-sleep 5
+if [ $trigger == true ]; then
+  new_build_code="$old_build_code"
+  # trigger build
+  echo "[$NOW] trigger build to Hub Docker"
+  curl -H "Content-Type: application/json" --data '{"build": true}' -X POST "https://registry.hub.docker.com/u/$IMAGE/trigger/$DOCKER_KEY/"
+  echo ""
+  # sleep 5
+
+  # wait until build is ready
+  while [ true  ]
+  do
+    new_build_code=$(curl -s  https://hub.docker.com/v2/repositories/$IMAGE/buildhistory/?page_size=1 | jq .results[0].build_code)
+    echo "[$NOW] Wainting Docker Image Creation: old:$old_build_code  new:$new_build_code"
+    if [ "$old_build_code" != "$new_build_code" ]; then
+      break
+    fi
+    sleep 1
+  done
+
+fi
+
+
 STATUS=$(curl -s  https://hub.docker.com/v2/repositories/$IMAGE/buildhistory/?page_size=1 | jq .results[0].status)
 
+# See if the service is able to come up again
+every=5
+i=0
 # wait until build is ready
-while [ $STATUS > 0 ]
+while [ $i -lt $TIMEOUT ]
 do
   NOW=$(date +"%Y-%m-%d %T")
   STATUS=$(curl -s  https://hub.docker.com/v2/repositories/$IMAGE/buildhistory/?page_size=1 | jq .results[0].status)
-  echo "[$NOW] Wainting Docker Image... Code:$STATUS"
-
+  echo "[$NOW] Waiting Docker Image... Code:$STATUS"
 
   if [[ $STATUS == 10 ]]; then
     echo "[$NOW] Build OK"
     exit 0
-  else
-    echo "[$NOW] Build Error Code: $STATUS"
+  fi
+
+  if [[ $STATUS == -1 ]]; then
+    echo "[$NOW] Build Error"
     exit 1
   fi
 
-  sleep 5
+  sleep $every
+  i=$(( $i + $every ))
 
 done
