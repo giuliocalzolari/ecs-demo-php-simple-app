@@ -5,7 +5,6 @@ function usage() {
     cat <<EOM
     ##### ecs-deploy #####
     Simple script for triggering blue/green deployments on Amazon Elastic Container Service
-    https://github.com/silinternational/ecs-deploy
 
     Required arguments:
         -k | --aws-access-key   AWS Access Key ID. May also be set as environment variable AWS_ACCESS_KEY_ID
@@ -35,7 +34,7 @@ IMAGE=false
 TIMEOUT=90
 VERBOSE=false
 
-# AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY can be set as environment variables 
+# AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY can be set as environment variables
 if [ -z ${AWS_ACCESS_KEY_ID+x} ]; then AWS_ACCESS_KEY_ID=false; fi
 if [ -z ${AWS_SECRET_ACCESS_KEY+x} ]; then AWS_SECRET_ACCESS_KEY=false; fi
 
@@ -85,23 +84,23 @@ if [ $VERBOSE == true ]; then
 fi
 
 # Make sure we have all the variables needed: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, CLUSTER, SERVICE, IMAGE
-if [ $AWS_ACCESS_KEY_ID == false ]; then 
+if [ $AWS_ACCESS_KEY_ID == false ]; then
     echo "AWS_ACCESS_KEY_ID is required. You can set it as an environment variable or pass the value using -k or --aws-access-key"
     exit 1
 fi
-if [ $AWS_SECRET_ACCESS_KEY == false ]; then 
+if [ $AWS_SECRET_ACCESS_KEY == false ]; then
     echo "AWS_SECRET_ACCESS_KEY is required. You can set it as an environment variable or pass the value using -s or --aws-secret-key"
     exit 1
 fi
-if [ $CLUSTER == false ]; then 
+if [ $CLUSTER == false ]; then
     echo "CLUSTER is required. You can pass the value using -c or --cluster"
     exit 1
 fi
-if [ $SERVICE == false ]; then 
+if [ $SERVICE == false ]; then
     echo "SERVICE is required. You can pass the value using -n or --service-name"
     exit 1
 fi
-if [ $IMAGE == false ]; then 
+if [ $IMAGE == false ]; then
     echo "IMAGE is required. You can pass the value using -i or --image"
     exit 1
 fi
@@ -143,25 +142,25 @@ UPDATE=`aws ecs update-service --cluster $CLUSTER --service $SERVICE --task-defi
 # See if the service is able to come up again
 every=10
 i=0
-while [ $i -lt $TIMEOUT ] 
+while [ $i -lt $TIMEOUT ]
 do
   # Scan the list of running tasks for that service, and see if one of them is the
   # new version of the task definition
   rm -f tasks
-  
+
   aws ecs list-tasks --cluster $CLUSTER  --service-name $SERVICE --desired-status RUNNING \
     | jq '.taskArns[]' \
     | xargs -I{} aws ecs describe-tasks --cluster $CLUSTER --tasks {} >> tasks
-  
+
   jq < tasks > results ".tasks[]| if .taskDefinitionArn == \"$NEW_TASKDEF\" then . else empty end|.lastStatus"
-  
+
   RUNNING=`grep -e "RUNNING" results`
 
   if [ $RUNNING ]; then
     echo "Service updated successfully, new task definition running.";
     exit 0
   fi
-  
+
   sleep $every
   i=$(( $i + $every ))
 done
@@ -169,4 +168,3 @@ done
 # Timeout
 echo "ERROR: New task definition not running within $TIMEOUT seconds"
 exit 1
-
