@@ -8,7 +8,3 @@ A basic RESTful API framework written in PHP. Allows you to create a web service
 
 # Installation
 Simply deploy the files on your web server. Then, create your controllers as in the **classes/controllers/** directory. The sample `NewsController` uses a flat-file approach to storing data, but this can be easily extended to use a database or other data source.
-
-
-Wed Sep  9 15:02:45 CEST 2015
-Mon Sep 14 12:04:39 CEST 2015
