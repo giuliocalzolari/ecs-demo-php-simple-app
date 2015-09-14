@@ -1,0 +1,4 @@
+ecsdeploy:
+    image: giuliocalzo/ecs-demo-php-simple-app
+    env_file:
+        - local.env
