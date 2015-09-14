@@ -1,9 +1,8 @@
 FROM ubuntu:12.04
 
 # Install dependencies
-RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" >> /etc/apt/sources.list
 RUN apt-get update -y
-RUN apt-get install -y git curl apache2 php5 libapache2-mod-php5 php5-mcrypt php5-mysql curl jq python-setuptools
+RUN apt-get install -y git curl apache2 php5 libapache2-mod-php5 php5-mcrypt php5-mysql curl python-setuptools
 
 
 RUN easy_install pip \
