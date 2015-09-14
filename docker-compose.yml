@@ -1,4 +1,5 @@
 ecsdeploy:
     image: giuliocalzo/ecs-demo-php-simple-app
+    restart: always
     env_file:
         - local.env
