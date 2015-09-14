@@ -69,13 +69,16 @@ fi
 # trigger build
 echo "trigger build to Hub Docker"
 curl -H "Content-Type: application/json" --data '{"build": true}' -X POST "https://registry.hub.docker.com/u/$IMAGE/trigger/$DOCKER_KEY/"
+echo ""
+
 STATUS=0
 
 # wait until build is ready
 while [ $STATUS > 0 ]; do
+  sleep 5
+  NOW=$(date +"%Y-%m-%d %T")
   STATUS=$(curl -s  https://hub.docker.com/v2/repositories/$IMAGE/buildhistory/?page_size=1 | jq .results[0].status)
-  sleep 1
-  echo "Wainting Docker Image..."
+  echo "[$NOW] Wainting Docker Image... Code:$STATUS"
 done
 
   if [ $STATUS == 10 ]; then
