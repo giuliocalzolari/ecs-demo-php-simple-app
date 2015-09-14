@@ -71,7 +71,6 @@ curl -H "Content-Type: application/json" --data '{"build": true}' -X POST "https
 STATUS=0
 
 # wait until build is ready
-
 while [ $STATUS != 0 ]; do
   STATUS=$(curl -s  https://hub.docker.com/v2/repositories/$IMAGE/buildhistory/?page_size=1 | jq .results[0].status)
   sleep 1
