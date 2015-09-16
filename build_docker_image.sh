@@ -61,9 +61,9 @@ do
     shift # past argument or value
 done
 
-# if [ $VERBOSE == true ]; then
-#     set -x
-# fi
+if [ $VERBOSE == true ]; then
+    set -x
+fi
 
 
 if [ $DOCKER_KEY == false ]; then
@@ -83,11 +83,6 @@ trigger=true
 if [ "$( echo $RAW | jq .results[0].status)" == 0 ]; then
   echo "[$NOW] IMAGE $old_build_code creation in progress"
   trigger=false
-
-  if [ $VERBOSE == false ]; then
-     exit 1
-  fi
-
 fi
 
 
