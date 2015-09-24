@@ -23,4 +23,4 @@ deployment:
   staging:
     branch: master
     commands:
-      - ./deploy.sh
+      - ./deploy.sh -c giuli-ECSCl-1XPBMDA5AJVRI -n giuli-servi-16WJHA6RH306D -i giuliocalzo/ecs-demo-php-simple-app:v_$CIRCLE_BUILD_NUM
