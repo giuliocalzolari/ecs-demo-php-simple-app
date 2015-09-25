@@ -18,4 +18,4 @@ deployment:
   staging:
     branch: master
     commands:
-      - ./deploy.sh -c giuli-ECSCl-1XPBMDA5AJVRI -n api-demo -i giuliocalzo/ecs-app1:v_$CIRCLE_BUILD_NUM
+      - ./deploy.sh -c giuli-ECSCl-5MG3GXRG5CCM -n  giuli-taskd-1WDWO5HR56T4M -i giuliocalzo/ecs-app1:v_$CIRCLE_BUILD_NUM
