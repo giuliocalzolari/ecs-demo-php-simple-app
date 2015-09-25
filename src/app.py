@@ -11,6 +11,10 @@ app = Flask(__name__)
 @app.route('/health/check')
 def health_check():
     return 'healthy', 200
+
+@app.route('/ping')
+def ping():
+    return 'healthy', 200
     # health = redis.get(server_health_key)
     # if health == 'on':
     #     return 'healthy', 200
