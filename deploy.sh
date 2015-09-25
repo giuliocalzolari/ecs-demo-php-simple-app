@@ -1,6 +1,5 @@
 #!/bin/bash
-docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-docker push giuliocalzo/ecs-demo-php-simple-app:v_$CIRCLE_BUILD_NUM
+
 
 
 
@@ -113,6 +112,14 @@ if [ $IMAGE == false ]; then
     echo "IMAGE is required. You can pass the value using -i or --image"
     exit 1
 fi
+
+
+echo "Login to Docker"
+docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+
+echo "Push to Docker"
+docker push $IMAGE
+
 
 # Get current task definition name from service
 TASK_DEFINITION=`aws ecs describe-services --services $SERVICE --cluster $CLUSTER | jq .services[0].taskDefinition | tr -d '"'`
