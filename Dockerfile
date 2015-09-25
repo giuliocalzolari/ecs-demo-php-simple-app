@@ -6,7 +6,8 @@ WORKDIR /app
 RUN rm -rf /app/*
 ADD src /app
 
-run apt-get install -y python-pip
+run apt-get update && \
+    apt-get install -y python-pip
 
 # Configure apache
 RUN pip install -r requirements.txt
