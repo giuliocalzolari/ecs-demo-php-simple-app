@@ -1,9 +1,10 @@
 FROM ubuntu:15.10
 
 # Install app
-WORKDIR /srv
-RUN rm -rf /srv/*
-ADD src /srv
+RUN     mkdir /app
+WORKDIR /app
+RUN rm -rf /app/*
+ADD src /app
 
 run apt-get update && \
     apt-get install -y python-pip

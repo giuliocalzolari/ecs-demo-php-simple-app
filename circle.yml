@@ -7,9 +7,9 @@ dependencies:
     - sudo apt-get update && sudo apt-get install jq python-pip
     - docker build -t giuliocalzo/ecs-demo-php-simple-app:v_$CIRCLE_BUILD_NUM .
 
-# test:
-#   override:
-#     - docker run -d giuliocalzo/ecs-demo-php-simple-app:v_$CIRCLE_BUILD_NUM
+test:
+  override:
+    - docker run -d giuliocalzo/ecs-demo-php-simple-app:v_$CIRCLE_BUILD_NUM
 
 deployment:
   production:
