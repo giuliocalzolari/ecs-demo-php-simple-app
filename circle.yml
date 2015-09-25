@@ -5,7 +5,6 @@ machine:
 dependencies:
   override:
     - sudo apt-get update && sudo apt-get install jq python-pip
-    - sudo pip install awscli boto pycli
     - docker build -t giuliocalzo/ecs-demo-php-simple-app:v_$CIRCLE_BUILD_NUM .
 
 # test:
